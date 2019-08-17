@@ -13,6 +13,9 @@ use formatter::print;
 
 fn main() {
     let mut translator = DictccTranslator::new();
-    translator.translate("lasdasfa");
-    print(translator.entries());
+
+    for argument in std::env::args().skip(1) {
+        translator.translate(&argument);
+        print(translator.entries());
+    }
 }
