@@ -223,6 +223,7 @@ name = "dict"
 version = "0.1.0"
 dependencies = [
  "itertools 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "lazy_static 1.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "reqwest 0.9.19 (registry+https://github.com/rust-lang/crates.io-index)",
  "scraper 0.10.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
