@@ -1,10 +1,10 @@
 extern crate itertools;
-extern crate reqwest;
 #[cfg(test)]
 extern crate lazy_static;
+extern crate reqwest;
 
-mod translation_extractor;
 mod formatter;
+mod translation_extractor;
 
 use translation_extractor::DictccTranslator;
 use translation_extractor::Translator;

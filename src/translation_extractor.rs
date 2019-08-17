@@ -3,8 +3,9 @@ use std::fmt;
 
 pub enum Entries {
     Translation(Vec<(String, String)>),
-    Suggestion(Vec<String>),
+    Suggestion((Vec<String>, Vec<String>)),
     NotSet,
+    NoResultsFound,
 }
 
 pub trait Translator {
@@ -43,7 +44,6 @@ impl fmt::Display for RequestError {
 }
 
 impl DictccTranslator {
-
     pub fn new() -> Self {
         DictccTranslator {
             entries: Entries::NotSet,
@@ -52,7 +52,7 @@ impl DictccTranslator {
 
     fn download_translations(request: &str) -> Result<String, RequestError> {
         const URL: &str = "https://dict.cc";
-        let request = reqwest::Url::parse_with_params(URL, &[("s",request)])?;
+        let request = reqwest::Url::parse_with_params(URL, &[("s", request)])?;
         Ok(reqwest::get(request)?.text()?)
     }
 
@@ -90,35 +90,58 @@ impl DictccTranslator {
         rows
     }
 
-    fn parse_translations(&mut self, html: &Html) {
+    fn parse_translations(html: &Html) -> Option<Vec<(String, String)>> {
         const LEFT_SELECTOR: &str = "tr[id^='tr'] > :nth-child(2)";
         const RIGHT_SELECTOR: &str = "tr[id^='tr'] > :nth-child(3)";
 
         let left = DictccTranslator::parse_column(html, LEFT_SELECTOR);
         let right = DictccTranslator::parse_column(html, RIGHT_SELECTOR);
         assert_eq!(left.len(), right.len());
-        assert!(!left.is_empty());
+
+        if left.is_empty() {
+            return None;
+        }
 
         let left = left.into_iter();
         let right = right.into_iter();
 
         let result = left.zip(right).collect();
 
-        self.entries = Entries::Translation(result);
+        Some(result)
+    }
+
+    fn parse_suggestions(html: &Html) -> Option<(Vec<String>, Vec<String>)> {
+        const LEFT_SELECTOR: &str = "td.td3nl:first-of-type > a";
+        const RIGHT_SELECTOR: &str = "td.td3nl:last-of-type > a";
+
+        let left = DictccTranslator::parse_column(&html, LEFT_SELECTOR);
+        let right = DictccTranslator::parse_column(&html, RIGHT_SELECTOR);
+
+        if left.is_empty() && right.is_empty() {
+            return None;
+        }
+
+        Some((left, right))
     }
 }
 
 impl Translator for DictccTranslator {
     fn translate(&mut self, request: &str) {
-        let html = DictccTranslator::download_translations(request);
-        match html {
+        match DictccTranslator::download_translations(request) {
             Ok(html) => {
                 let document = Html::parse_document(&html);
-                self.parse_translations(&document);
+                match DictccTranslator::parse_translations(&document) {
+                    Some(t) => self.entries = Entries::Translation(t),
+                    None => match DictccTranslator::parse_suggestions(&document) {
+                        Some(s) => self.entries = Entries::Suggestion(s),
+                        None => self.entries = Entries::NoResultsFound,
+                    },
+                }
             }
-            Err(failure) => {
-                println!("Requesting translations from dict.cc failed. Reason: {}", failure);
-            }
+            Err(failure) => println!(
+                "Requesting translations from dict.cc failed. Reason: {}",
+                failure
+            ),
         }
     }
 
@@ -130,7 +153,6 @@ impl Translator for DictccTranslator {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use lazy_static::lazy_static;
 
     fn read_translations(filename: &str) -> Vec<(String, String)> {
         use crate::itertools::Itertools;
@@ -154,54 +176,86 @@ mod tests {
         translations
     }
 
-    struct TestFixture {
-        document_asddgf: String,
-        document_valid: String,
-        solutions_valid: Vec<(String, String)>,
+    fn read_suggestions(filename: &str) -> (Vec<String>, Vec<String>) {
+        use std::fs::File;
+        use std::io::{BufRead, BufReader};
+
+        let file = File::open(filename).unwrap();
+        let reader = BufReader::new(file);
+
+        let mut suggestions = (Vec::new(), Vec::new());
+        let mut before_swap = true;
+
+        for line in reader.lines() {
+            let line = line.unwrap();
+
+            if line == "" {
+                before_swap = false;
+                continue;
+            }
+
+            if before_swap {
+                suggestions.0.push(line);
+            } else {
+                suggestions.1.push(line);
+            }
+        }
+
+        suggestions
     }
 
-    lazy_static! {
-        static ref FIXTURE: TestFixture = TestFixture {
-            document_asddgf: std::fs::read_to_string("dict-responses/asddgf.html").unwrap(),
-            document_valid: std::fs::read_to_string("dict-responses/valid.html").unwrap(),
-            solutions_valid: read_translations("dict-responses/valid.tl"),
-        };
+    fn read_website(filename: &str) -> Html {
+        let document = std::fs::read_to_string(filename).unwrap();
+
+        Html::parse_document(&document)
     }
 
     #[test]
     fn empty_column() {
-        let document = std::fs::read_to_string("dict-responses/asddgf.html").unwrap();
+        let challenge = read_website("dict-responses/asddgf.html");
         const LEFT_SELECTOR: &str = "tr[id^='tr'] > :nth-child(2)";
 
-        let entries = DictccTranslator::parse_column(&document, LEFT_SELECTOR);
+        let entries = DictccTranslator::parse_column(&challenge, LEFT_SELECTOR);
 
         assert!(entries.is_empty());
     }
 
     #[test]
     fn full_column() {
-        let document = std::fs::read_to_string("dict-responses/valid.html").unwrap();
+        let challenge = read_website("dict-responses/valid.html");
+        let solution = read_translations("dict-responses/valid.tl");
         const LEFT_SELECTOR: &str = "tr[id^='tr'] > :nth-child(2)";
 
-        let entries = DictccTranslator::parse_column(&document, LEFT_SELECTOR);
+        let entries = DictccTranslator::parse_column(&challenge, LEFT_SELECTOR);
 
         assert_eq!(entries.len(), 50);
+        itertools::assert_equal(&entries, solution.iter().map(|tuple| &tuple.0));
     }
 
     #[test]
     fn many_translations() {
-        let document = std::fs::read_to_string("dict-responses/valid.html").unwrap();
-        let mut translator = DictccTranslator::new();
+        let challenge = read_website("dict-responses/valid.html");
+        let solution = read_translations("dict-responses/valid.tl");
 
-        translator.parse_translations(&document);
+        let result = DictccTranslator::parse_translations(&challenge);
 
-        match translator.entries() {
-            Entries::Translation(translations) => {
-                assert_eq!(translations.len(), 50);
-                assert_eq!(translations, &FIXTURE.solutions_valid);
-            }
-            _ => panic!(),
-        }
+        let result = result.unwrap();
+        assert_eq!(result.len(), 50);
+        assert_eq!(&result, &solution);
+    }
+
+    #[test]
+    fn some_suggestions() {
+        let challenge = read_website("dict-responses/mispelt.html");
+        let solution = read_suggestions("dict-responses/mispelt.sugg");
+
+        let result = DictccTranslator::parse_translations(&challenge);
+        assert!(result.is_none());
+
+        let result = DictccTranslator::parse_suggestions(&challenge);
+
+        let result = result.unwrap();
+        assert_eq!(&result, &solution);
     }
 
     #[test]
