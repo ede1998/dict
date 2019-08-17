@@ -1,3 +1,6 @@
+use scraper::Html;
+use std::fmt;
+
 pub enum Entries {
     Translation(Vec<(String, String)>),
     Suggestion(Vec<String>),
@@ -13,27 +16,52 @@ pub struct DictccTranslator {
     entries: Entries,
 }
 
+enum RequestError {
+    UrlError(reqwest::UrlError),
+    DownloadError(reqwest::Error),
+}
+
+impl From<reqwest::UrlError> for RequestError {
+    fn from(error: reqwest::UrlError) -> Self {
+        RequestError::UrlError(error)
+    }
+}
+
+impl From<reqwest::Error> for RequestError {
+    fn from(error: reqwest::Error) -> Self {
+        RequestError::DownloadError(error)
+    }
+}
+
+impl fmt::Display for RequestError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            RequestError::UrlError(e) => fmt::Display::fmt(e, f),
+            RequestError::DownloadError(e) => fmt::Display::fmt(e, f),
+        }
+    }
+}
+
 impl DictccTranslator {
-    pub fn new() -> DictccTranslator {
+
+    pub fn new() -> Self {
         DictccTranslator {
             entries: Entries::NotSet,
         }
     }
 
-    fn download_translations(_request: &str) -> String {
-        reqwest::get("https://dict.cc?s=test")
-            .unwrap()
-            .text()
-            .unwrap()
+    fn download_translations(request: &str) -> Result<String, RequestError> {
+        const URL: &str = "https://dict.cc";
+        let request = reqwest::Url::parse_with_params(URL, &[("s",request)])?;
+        Ok(reqwest::get(request)?.text()?)
     }
 
-    fn parse_column(html: &str, column_selector: &str) -> Vec<String> {
-        use scraper::{ElementRef, Html, Selector};
+    fn parse_column(html: &Html, column_selector: &str) -> Vec<String> {
+        use scraper::{ElementRef, Selector};
 
-        let document = Html::parse_document(&html);
         let selector = Selector::parse(column_selector).unwrap();
 
-        let rows: Vec<String> = document
+        let rows: Vec<String> = html
             .select(&selector)
             .map(|element| {
                 let mut content = String::new();
@@ -62,7 +90,7 @@ impl DictccTranslator {
         rows
     }
 
-    fn parse_translations(&mut self, html: &str) {
+    fn parse_translations(&mut self, html: &Html) {
         const LEFT_SELECTOR: &str = "tr[id^='tr'] > :nth-child(2)";
         const RIGHT_SELECTOR: &str = "tr[id^='tr'] > :nth-child(3)";
 
@@ -83,7 +111,15 @@ impl DictccTranslator {
 impl Translator for DictccTranslator {
     fn translate(&mut self, request: &str) {
         let html = DictccTranslator::download_translations(request);
-        self.parse_translations(&html);
+        match html {
+            Ok(html) => {
+                let document = Html::parse_document(&html);
+                self.parse_translations(&document);
+            }
+            Err(failure) => {
+                println!("Requesting translations from dict.cc failed. Reason: {}", failure);
+            }
+        }
     }
 
     fn entries(&self) -> &Entries {
