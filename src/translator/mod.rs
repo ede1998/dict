@@ -1,4 +1,5 @@
 mod dictcc;
+mod language;
 
 pub enum Entries {
     Translation(Vec<(String, String)>),
@@ -13,3 +14,4 @@ pub trait Translator {
 }
 
 pub use dictcc::DictccTranslator;
+pub use language::Language;

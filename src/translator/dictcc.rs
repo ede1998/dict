@@ -258,7 +258,7 @@ mod tests {
     #[test]
     fn suggestions_none() {
         let challenge = read_website("dict-responses/asddgf.html");
-        
+
         let result = DictccTranslator::parse_translations(&challenge);
         assert!(result.is_none());
         let result = DictccTranslator::parse_suggestions(&challenge);
@@ -272,6 +272,6 @@ mod tests {
         let result = DictccTranslator::download_translations(WORD);
 
         let result = result.unwrap();
-        Html::parse_document(&result);        
+        Html::parse_document(&result);
     }
 }
