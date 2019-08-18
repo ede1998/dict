@@ -17,6 +17,7 @@ pub struct DictccTranslator {
     entries: Entries,
 }
 
+#[derive(Debug)]
 enum RequestError {
     UrlError(reqwest::UrlError),
     DownloadError(reqwest::Error),
@@ -211,7 +212,7 @@ mod tests {
     }
 
     #[test]
-    fn empty_column() {
+    fn column_empty() {
         let challenge = read_website("dict-responses/asddgf.html");
         const LEFT_SELECTOR: &str = "tr[id^='tr'] > :nth-child(2)";
 
@@ -221,7 +222,7 @@ mod tests {
     }
 
     #[test]
-    fn full_column() {
+    fn column_full() {
         let challenge = read_website("dict-responses/valid.html");
         let solution = read_translations("dict-responses/valid.tl");
         const LEFT_SELECTOR: &str = "tr[id^='tr'] > :nth-child(2)";
@@ -233,7 +234,7 @@ mod tests {
     }
 
     #[test]
-    fn many_translations() {
+    fn translations_many() {
         let challenge = read_website("dict-responses/valid.html");
         let solution = read_translations("dict-responses/valid.tl");
 
@@ -245,12 +246,18 @@ mod tests {
     }
 
     #[test]
-    fn some_suggestions() {
+    fn translations_none() {
         let challenge = read_website("dict-responses/mispelt.html");
-        let solution = read_suggestions("dict-responses/mispelt.sugg");
 
         let result = DictccTranslator::parse_translations(&challenge);
+
         assert!(result.is_none());
+    }
+
+    #[test]
+    fn suggestions_many() {
+        let challenge = read_website("dict-responses/mispelt.html");
+        let solution = read_suggestions("dict-responses/mispelt.sugg");
 
         let result = DictccTranslator::parse_suggestions(&challenge);
 
@@ -259,18 +266,22 @@ mod tests {
     }
 
     #[test]
-    fn no_translation() {}
+    fn suggestions_none() {
+        let challenge = read_website("dict-responses/asddgf.html");
+        
+        let result = DictccTranslator::parse_translations(&challenge);
+        assert!(result.is_none());
+        let result = DictccTranslator::parse_suggestions(&challenge);
+        assert!(result.is_none());
+    }
 
-    //#[test]
-    //fn parse_no_results_but_suggestions() {
-    //    let document = std::fs::read_to_string("dict-responses/mispelt.html").unwrap();
-    //    let document = Html::parse_document(&document);
+    #[test]
+    fn download() {
+        const WORD: &str = "test";
 
-    //    let selector = "tr[id^='tr']";
-    //    let selector = Selector::parse(selector).unwrap();
+        let result = DictccTranslator::download_translations(WORD);
 
-    //    for e in document.select(&selector) {
-    //        panic!("false positive for translation: {:#?}", e.value());
-    //    }
-    //}
+        let result = result.unwrap();
+        Html::parse_document(&result);        
+    }
 }

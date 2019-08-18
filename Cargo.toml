@@ -1,6 +1,6 @@
 [package]
 name = "dict"
-version = "0.1.0"
+version = "1.0.0"
 authors = ["ede1998 <online@erik-hennig.me>"]
 edition = "2018"
 
@@ -10,6 +10,3 @@ edition = "2018"
 scraper = "0.10.1"
 reqwest = "0.9.19"
 itertools = "0.8.0"
-
-[dev-dependencies]
-lazy_static = "1.3.0"

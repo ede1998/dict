@@ -1,6 +1,4 @@
 extern crate itertools;
-#[cfg(test)]
-extern crate lazy_static;
 extern crate reqwest;
 
 mod formatter;
