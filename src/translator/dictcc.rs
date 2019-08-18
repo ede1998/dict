@@ -1,17 +1,7 @@
 use scraper::Html;
 use std::fmt;
 
-pub enum Entries {
-    Translation(Vec<(String, String)>),
-    Suggestion((Vec<String>, Vec<String>)),
-    NotSet,
-    NoResultsFound,
-}
-
-pub trait Translator {
-    fn translate(&mut self, request: &str);
-    fn entries(&self) -> &Entries;
-}
+use super::*;
 
 pub struct DictccTranslator {
     entries: Entries,

@@ -1,4 +1,4 @@
-use crate::translation_extractor::Entries;
+use crate::translator::Entries;
 
 // TODO should be added to Entries
 pub fn print(entries: &Entries) {

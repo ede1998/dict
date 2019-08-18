@@ -2,10 +2,10 @@ extern crate itertools;
 extern crate reqwest;
 
 mod formatter;
-mod translation_extractor;
+mod translator;
 
-use translation_extractor::DictccTranslator;
-use translation_extractor::Translator;
+use translator::DictccTranslator;
+use translator::Translator;
 
 use formatter::print;
 
