@@ -47,7 +47,10 @@ impl DictccTranslator {
         }
     }
 
-    fn download_translations(request: &str, language: LanguagePair) -> Result<String, RequestError> {
+    fn download_translations(
+        request: &str,
+        language: LanguagePair,
+    ) -> Result<String, RequestError> {
         // format!() does not work bc it expects a string literal as its first argument
         let request_url = URL
             .replacen("{}", &language.0.get_abbreviation(), 1)
@@ -155,6 +158,32 @@ impl Translator for DictccTranslator {
 
     fn set_languages(&mut self, languages: LanguagePair) {
         self.languages = languages;
+    }
+
+    fn set_languages_if_available(&mut self, languages: LanguagePair) -> bool {
+        let available = DictccTranslator::is_language_available(languages);
+        if available {
+            self.languages = languages;
+        }
+        available
+    }
+
+    fn is_language_available(language: LanguagePair) -> bool {
+        match DictccTranslator::download_translations("", language) {
+            Ok(html) => {
+                let document = Html::parse_document(&html);
+                let selector = scraper::Selector::parse("h1").unwrap();
+                match document.select(&selector).next() {
+                    Some(heading) => return &heading.inner_html() != "Sorry!",
+                    None => println!("Error: dict.cc format changed, please contact maintainer!"),
+                }
+            }
+            Err(failure) => println!(
+                "Checking availabel translations from dict.cc failed. Reason: {}",
+                failure
+            ),
+        }
+        false
     }
 }
 

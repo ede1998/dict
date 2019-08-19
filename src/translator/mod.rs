@@ -18,6 +18,9 @@ pub trait Translator {
 
     fn languages(&self) -> LanguagePair;
     fn set_languages(&mut self, language: LanguagePair);
+    fn set_languages_if_available(&mut self, languages: LanguagePair) -> bool;
+
+    fn is_language_available(language: LanguagePair) -> bool;
 }
 
 pub use dictcc::DictccTranslator;
