@@ -81,7 +81,7 @@ impl DictccTranslator {
         rows
     }
 
-    fn parse_translations(html: &Html) -> Option<Vec<(String, String)>> {
+    fn parse_translations(html: &Html) -> Option<Translations> {
         const LEFT_SELECTOR: &str = "tr[id^='tr'] > :nth-child(2)";
         const RIGHT_SELECTOR: &str = "tr[id^='tr'] > :nth-child(3)";
 
@@ -101,7 +101,7 @@ impl DictccTranslator {
         Some(result)
     }
 
-    fn parse_suggestions(html: &Html) -> Option<(Vec<String>, Vec<String>)> {
+    fn parse_suggestions(html: &Html) -> Option<Suggestions> {
         const LEFT_SELECTOR: &str = "td.td3nl:first-of-type > a";
         const RIGHT_SELECTOR: &str = "td.td3nl:last-of-type > a";
 
@@ -145,7 +145,7 @@ impl Translator for DictccTranslator {
 mod tests {
     use super::*;
 
-    fn read_translations(filename: &str) -> Vec<(String, String)> {
+    fn read_translations(filename: &str) -> Translations {
         use crate::itertools::Itertools;
         use std::fs::File;
         use std::io::{BufRead, BufReader};
@@ -167,7 +167,7 @@ mod tests {
         translations
     }
 
-    fn read_suggestions(filename: &str) -> (Vec<String>, Vec<String>) {
+    fn read_suggestions(filename: &str) -> Suggestions {
         use std::fs::File;
         use std::io::{BufRead, BufReader};
 

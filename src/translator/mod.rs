@@ -1,9 +1,12 @@
 mod dictcc;
 mod language;
 
+pub type Translations = Vec<(String, String)>;
+pub type Suggestions = (Vec<String>, Vec<String>);
+
 pub enum Entries {
-    Translation(Vec<(String, String)>),
-    Suggestion((Vec<String>, Vec<String>)),
+    Translation(Translations),
+    Suggestion(Suggestions),
     NotSet,
     NoResultsFound,
 }

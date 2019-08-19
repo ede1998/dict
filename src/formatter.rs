@@ -1,4 +1,4 @@
-use crate::translator::Entries;
+use crate::translator::{Entries, Translations, Suggestions};
 
 // TODO should be added to Entries
 pub fn print(entries: &Entries) {
@@ -11,7 +11,7 @@ pub fn print(entries: &Entries) {
     }
 }
 
-fn print_translations(translations: &Vec<(String, String)>) {
+fn print_translations(translations: &Translations) {
     const MINIMUM_GAP: usize = 8;
     const FILLER_CHAR: &str = ".";
 
@@ -31,7 +31,7 @@ fn print_translations(translations: &Vec<(String, String)>) {
     }
 }
 
-fn print_suggestions(suggestions: &(Vec<String>, Vec<String>)) {
+fn print_suggestions(suggestions: &Suggestions) {
     use itertools::EitherOrBoth;
     use itertools::Itertools;
     const MINIMUM_GAP: usize = 8;
