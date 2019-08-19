@@ -2,10 +2,15 @@ use scraper::Html;
 use std::fmt;
 
 use super::*;
+use language::LanguagePair;
 
+#[derive(Debug)]
 pub struct DictccTranslator {
     entries: Entries,
+    languages: LanguagePair,
 }
+
+const URL: &str = "https://{}{}.dict.cc";
 
 #[derive(Debug)]
 enum RequestError {
@@ -38,12 +43,16 @@ impl DictccTranslator {
     pub fn new() -> Self {
         DictccTranslator {
             entries: Entries::NotSet,
+            languages: DEFAULT_LANGUAGES,
         }
     }
 
-    fn download_translations(request: &str) -> Result<String, RequestError> {
-        const URL: &str = "https://dict.cc";
-        let request = reqwest::Url::parse_with_params(URL, &[("s", request)])?;
+    fn download_translations(request: &str, language: LanguagePair) -> Result<String, RequestError> {
+        // format!() does not work bc it expects a string literal as its first argument
+        let request_url = URL
+            .replacen("{}", &language.0.get_abbreviation(), 1)
+            .replacen("{}", &language.1.get_abbreviation(), 1);
+        let request = reqwest::Url::parse_with_params(&request_url, &[("s", request)])?;
         Ok(reqwest::get(request)?.text()?)
     }
 
@@ -118,7 +127,7 @@ impl DictccTranslator {
 
 impl Translator for DictccTranslator {
     fn translate(&mut self, request: &str) {
-        match DictccTranslator::download_translations(request) {
+        match DictccTranslator::download_translations(request, self.languages) {
             Ok(html) => {
                 let document = Html::parse_document(&html);
                 match DictccTranslator::parse_translations(&document) {
@@ -138,6 +147,14 @@ impl Translator for DictccTranslator {
 
     fn entries(&self) -> &Entries {
         &self.entries
+    }
+
+    fn languages(&self) -> LanguagePair {
+        self.languages
+    }
+
+    fn set_languages(&mut self, languages: LanguagePair) {
+        self.languages = languages;
     }
 }
 

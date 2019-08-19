@@ -1,3 +1,6 @@
+pub type LanguagePair = (Language, Language);
+pub const DEFAULT_LANGUAGES: LanguagePair = (Language::EN, Language::DE);
+
 #[allow(dead_code)]
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub enum Language {
@@ -37,6 +40,12 @@ impl Language {
             abbrs.push(l.abbreviation);
         }
         abbrs
+    }
+
+    pub fn get_abbreviation(&self) -> &str {
+        let output = LANGUAGE[*self as usize];
+        assert_eq!(output.value, *self);
+        output.abbreviation
     }
 }
 

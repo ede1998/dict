@@ -27,6 +27,7 @@ fn main() {
     println!("{} >>>>>>>>>>>>>>>>>>> {}", language.0, language.1);
 
     let mut translator = DictccTranslator::new();
+    translator.set_languages(language);
 
     let query = arguments.value_of(args::QUERY).unwrap();
     translator.translate(&query);
