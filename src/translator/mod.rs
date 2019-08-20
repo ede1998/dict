@@ -13,8 +13,14 @@ pub enum Entries {
 }
 
 pub trait Translator {
-    fn translate(&mut self, request: &str);
+    fn translate(&mut self, request: &str) {
+        self.set_query(request);
+        self.translate_query();
+    }
+    fn translate_query(&mut self);
     fn entries(&self) -> &Entries;
+    fn query(&self) -> &str;
+    fn set_query(&mut self, query: &str);
 
     fn languages(&self) -> LanguagePair;
     fn set_languages(&mut self, language: LanguagePair);

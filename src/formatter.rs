@@ -1,9 +1,9 @@
-use crate::translator::{Entries, Suggestions, Translations};
+use crate::translator::{Translator, Entries, Suggestions, Translations};
 
 // TODO should be added to Entries
-pub fn print(entries: &Entries) {
+pub fn print(translator: impl Translator) {
     use Entries::*;
-    match entries {
+    match translator.entries() {
         Translation(t) => print_translations(&t),
         Suggestion(s) => print_suggestions(&s),
         NotSet => println!("No search done yet."),

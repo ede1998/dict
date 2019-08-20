@@ -42,5 +42,5 @@ fn main() {
 
     let query = arguments.value_of(args::QUERY).unwrap();
     translator.translate(&query);
-    print(translator.entries());
+    print(translator);
 }

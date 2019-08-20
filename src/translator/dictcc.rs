@@ -7,6 +7,7 @@ use language::LanguagePair;
 #[derive(Debug)]
 pub struct DictccTranslator {
     entries: Entries,
+    query: String,
     languages: LanguagePair,
 }
 
@@ -44,6 +45,7 @@ impl DictccTranslator {
         DictccTranslator {
             entries: Entries::NotSet,
             languages: DEFAULT_LANGUAGES,
+            query: String::new(),
         }
     }
 
@@ -129,8 +131,8 @@ impl DictccTranslator {
 }
 
 impl Translator for DictccTranslator {
-    fn translate(&mut self, request: &str) {
-        match DictccTranslator::download_translations(request, self.languages) {
+    fn translate_query(&mut self) {
+        match DictccTranslator::download_translations(&self.query, self.languages) {
             Ok(html) => {
                 let document = Html::parse_document(&html);
                 match DictccTranslator::parse_translations(&document) {
@@ -150,6 +152,14 @@ impl Translator for DictccTranslator {
 
     fn entries(&self) -> &Entries {
         &self.entries
+    }
+
+    fn query(&self) -> &str {
+        &self.query
+    }
+
+    fn set_query(&mut self, query: &str) {
+        self.query = String::from(query);
     }
 
     fn languages(&self) -> LanguagePair {
