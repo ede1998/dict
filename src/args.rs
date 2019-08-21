@@ -38,15 +38,15 @@ pub fn parse() -> ArgMatches<'static> {
         .subcommand(
             SubCommand::with_name(INFO)
                 .about("prints more information about languages")
-                .arg(
-                    Arg::with_name(AVAILABLE)
-                        .help("prints all available language pairs")
-                        .conflicts_with(ABBREVIATIONS),
+                .setting(AppSettings::DisableHelpSubcommand)
+                .setting(AppSettings::SubcommandRequiredElseHelp)
+                .subcommand(
+                    SubCommand::with_name(AVAILABLE)
+                        .about("prints all available language pairs"),
                 )
-                .arg(
-                    Arg::with_name(ABBREVIATIONS)
-                        .help("prints the long names and abbreviations for each language")
-                        .conflicts_with(AVAILABLE),
+                .subcommand(
+                    SubCommand::with_name(ABBREVIATIONS)
+                        .about("prints the long names and abbreviations for each language"),
                 ),
         )
         .get_matches();
