@@ -27,7 +27,7 @@ pub fn parse() -> ArgMatches<'static> {
                 ))
                 .takes_value(true)
                 .case_insensitive(true)
-                .possible_values(&Language::get_all_language_abbreviations()[..]),
+                .possible_values(&Language::get_all_languages().iter().map(|l| l.get_abbreviation()).collect::<Vec<&str>>()[..]),
         )
         .arg(
             Arg::with_name(QUERY)
@@ -42,11 +42,13 @@ pub fn parse() -> ArgMatches<'static> {
                 .setting(AppSettings::SubcommandRequiredElseHelp)
                 .subcommand(
                     SubCommand::with_name(AVAILABLE)
-                        .about("prints all available language pairs"),
+                        .about("prints all available language pairs")
+                        .setting(AppSettings::DisableHelpFlags),
                 )
                 .subcommand(
                     SubCommand::with_name(ABBREVIATIONS)
-                        .about("prints the long names and abbreviations for each language"),
+                        .about("prints the long names and abbreviations for each language")
+                        .setting(AppSettings::DisableHelpFlags),
                 ),
         )
         .get_matches();

@@ -34,10 +34,10 @@ pub enum Language {
 }
 
 impl Language {
-    pub fn get_all_language_abbreviations() -> Vec<&'static str> {
+    pub fn get_all_languages() -> Vec<Language> {
         let mut abbrs = Vec::new();
         for l in &LANGUAGE {
-            abbrs.push(l.abbreviation);
+            abbrs.push(l.value);
         }
         abbrs
     }
