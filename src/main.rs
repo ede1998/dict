@@ -22,6 +22,14 @@ use formatter::print;
 fn main() {
     let arguments = args::parse();
 
+    if let Some(subarguments) = arguments.subcommand_matches(args::INFO) {
+        print_info(&subarguments);
+    } else {
+        issue_query(&arguments);
+    }
+}
+
+fn issue_query(arguments: &clap::ArgMatches) {
     let mut language = (Language::DE, Language::EN);
     if let Some(pair) = arguments.values_of(args::LANGUAGE_PAIR) {
         let pair: Vec<&str> = pair.collect();
@@ -43,4 +51,10 @@ fn main() {
     let query = arguments.value_of(args::QUERY).unwrap();
     translator.translate(&query);
     print(translator);
+}
+
+fn print_info(arguments: &clap::ArgMatches) {
+    match arguments.subcommand_name() {
+        
+    }
 }

@@ -1,4 +1,4 @@
-use crate::translator::{Translator, Entries, Suggestions, Translations};
+use crate::translator::{Entries, Suggestions, Translations, Translator};
 
 // TODO should be added to Entries
 pub fn print(translator: impl Translator) {
