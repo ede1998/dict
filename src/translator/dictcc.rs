@@ -324,8 +324,9 @@ mod tests {
     #[test]
     fn download() {
         const WORD: &str = "test";
+        const LANG: LanguagePair = (Language::EN, Language::DE);
 
-        let result = DictccTranslator::download_translations(WORD);
+        let result = DictccTranslator::download_translations(WORD, LANG);
 
         let result = result.unwrap();
         Html::parse_document(&result);
