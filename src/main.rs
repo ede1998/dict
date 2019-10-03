@@ -4,7 +4,7 @@
     crate_version,
     crate_authors,
     crate_description
-    )]
+)]
 extern crate clap;
 extern crate itertools;
 extern crate reqwest;
@@ -37,7 +37,7 @@ fn issue_query(arguments: &clap::ArgMatches) {
         language = (
             pair[0].parse::<Language>().unwrap(),
             pair[1].parse::<Language>().unwrap(),
-            );
+        );
     }
 
     let mut translator = DictccTranslator::new();
@@ -54,15 +54,23 @@ fn issue_query(arguments: &clap::ArgMatches) {
 }
 
 fn print_info(arguments: &clap::ArgMatches) {
-    let subcommand = arguments.subcommand_name().expect("Unexpected missing subcommand. Please contact the developer.");
+    let subcommand = arguments
+        .subcommand_name()
+        .expect("Unexpected missing subcommand. Please contact the developer.");
     match subcommand {
         args::AVAILABLE => {
             let languages = Language::get_all_languages();
             println!("The following language pairs are available:");
             for l1 in [Language::EN, Language::DE].iter() {
                 for l2 in &languages {
-                    if DictccTranslator::is_language_available((*l1,*l2)) {
-                        println!("{} {} => {} - {}", l1.get_abbreviation(), l2.get_abbreviation(), l1, l2);
+                    if DictccTranslator::is_language_available((*l1, *l2)) {
+                        println!(
+                            "{} {} => {} - {}",
+                            l1.get_abbreviation(),
+                            l2.get_abbreviation(),
+                            l1,
+                            l2
+                        );
                     }
                 }
                 println!();

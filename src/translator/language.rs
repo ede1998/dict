@@ -97,7 +97,6 @@ impl fmt::Display for Language {
 }
 
 impl std::str::FromStr for Language {
-
     type Err = ();
 
     fn from_str(s: &str) -> Result<Language, ()> {

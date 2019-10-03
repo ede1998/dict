@@ -27,7 +27,12 @@ pub fn parse() -> ArgMatches<'static> {
                 ))
                 .takes_value(true)
                 .case_insensitive(true)
-                .possible_values(&Language::get_all_languages().iter().map(|l| l.get_abbreviation()).collect::<Vec<&str>>()[..]),
+                .possible_values(
+                    &Language::get_all_languages()
+                        .iter()
+                        .map(|l| l.get_abbreviation())
+                        .collect::<Vec<&str>>()[..],
+                ),
         )
         .arg(
             Arg::with_name(QUERY)

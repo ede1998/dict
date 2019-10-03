@@ -189,7 +189,7 @@ impl Translator for DictccTranslator {
                 }
             }
             Err(failure) => println!(
-                "Checking availabel translations from dict.cc failed. Reason: {}",
+                "Checking available translations from dict.cc failed. Reason: {}",
                 failure
             ),
         }
