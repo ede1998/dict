@@ -1,6 +1,5 @@
 use crate::translator::{Entries, Suggestions, Translations, Translator};
 
-// TODO should be added to Entries
 pub fn print(translator: impl Translator) {
     use Entries::*;
     match translator.entries() {

@@ -60,14 +60,14 @@ fn print_info(arguments: &clap::ArgMatches) {
     match subcommand {
         args::AVAILABLE => {
             println!("The following language pairs are available:");
-            for (l1,l2) in DictccTranslator::get_available_languages() {
-                        println!(
-                            "{} {} => {} - {}",
-                            l1.get_abbreviation(),
-                            l2.get_abbreviation(),
-                            l1,
-                            l2
-                        );
+            for (l1, l2) in DictccTranslator::get_available_languages() {
+                println!(
+                    "{} {} => {} - {}",
+                    l1.get_abbreviation(),
+                    l2.get_abbreviation(),
+                    l1,
+                    l2
+                );
             }
         }
         args::ABBREVIATIONS => {

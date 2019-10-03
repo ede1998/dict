@@ -80,7 +80,7 @@ impl DictccTranslator {
                 for node in element.children() {
                     match ElementRef::wrap(node) {
                         Some(node) => {
-                            let undesired_tags = vec!["dfn", "div"];
+                            let undesired_tags = ["dfn", "div", "span"];
                             if !undesired_tags.contains(&node.value().name()) {
                                 content.push_str(&node.text().collect::<String>());
                             }
@@ -377,6 +377,27 @@ mod tests {
 
         let result = result.unwrap();
         Html::parse_document(&result);
+    }
+
+    #[test]
+    fn no_superscript_numbers() {
+        use Entries::Translation;
+        const WORD: &str = "pantomime";
+        const LANG: LanguagePair = (Language::EN, Language::DE);
+
+        let mut translator = DictccTranslator::new();
+        assert!(translator.set_languages_if_available(LANG));
+        translator.translate(&WORD);
+
+        match translator.entries() {
+            Translation(t) => {
+                for (l, r) in t {
+                    assert_eq!(l.chars().any(char::is_numeric), false);
+                    assert_eq!(r.chars().any(char::is_numeric), false);
+                }
+            }
+            _ => panic!("No translations found unexpectedly!"),
+        }
     }
 
     #[test]
