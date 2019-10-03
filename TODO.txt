@@ -1,0 +1,5 @@
+$ dict --languages EN RU calm
+English >>>>>>>>>>>>>>>>>>> Russian
+========== TRANSLATIONS ==========
+спокойный {adj} ............................................................. calm
+wrong order !!!!
