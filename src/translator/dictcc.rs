@@ -12,6 +12,7 @@ pub struct DictccTranslator {
 }
 
 const URL: &str = "https://{}{}.dict.cc";
+const URL_LANGUAGE_LIST: &str = "https://www.dict.cc";
 
 #[derive(Debug)]
 enum RequestError {
@@ -49,6 +50,10 @@ impl DictccTranslator {
         }
     }
 
+    fn make_request(request: &str) -> Result<String, RequestError> {
+        Ok(reqwest::get(request)?.text()?)
+    }
+
     fn download_translations(
         request: &str,
         language: LanguagePair,
@@ -58,7 +63,7 @@ impl DictccTranslator {
             .replacen("{}", &language.0.get_abbreviation(), 1)
             .replacen("{}", &language.1.get_abbreviation(), 1);
         let request = reqwest::Url::parse_with_params(&request_url, &[("s", request)])?;
-        Ok(reqwest::get(request)?.text()?)
+        DictccTranslator::make_request(&request.as_str())
     }
 
     fn parse_column(html: &Html, column_selector: &str) -> Vec<String> {
@@ -128,6 +133,34 @@ impl DictccTranslator {
 
         Some((left, right))
     }
+
+    fn parse_available_languages(html: &Html) -> Vec<LanguagePair> {
+        use itertools::Itertools;
+        use scraper::Selector;
+        const SELECTOR: &str = "#lpddbsf option";
+
+        let selector = Selector::parse(&SELECTOR).unwrap();
+        let rows: Vec<LanguagePair> = html
+            .select(&selector)
+            .filter_map(|element| {
+                // filter wrong elements
+                let element = element.value().attr("value")?;
+                if element.contains("-") || element.len() != 4 {
+                    return None;
+                }
+
+                let language = (
+                    element[0..2].parse::<Language>().ok()?,
+                    element[2..4].parse::<Language>().ok()?,
+                );
+
+                Some(language)
+            })
+            .unique()
+            .collect();
+
+        rows
+    }
 }
 
 impl Translator for DictccTranslator {
@@ -194,6 +227,20 @@ impl Translator for DictccTranslator {
             ),
         }
         false
+    }
+
+    fn get_available_languages() -> Vec<LanguagePair> {
+        match DictccTranslator::make_request(URL_LANGUAGE_LIST) {
+            Ok(html) => {
+                let document = Html::parse_document(&html);
+                return DictccTranslator::parse_available_languages(&document);
+            }
+            Err(failure) => println!(
+                "Checking available translations from dict.cc failed. Reason: {}",
+                failure
+            ),
+        }
+        vec![]
     }
 }
 
@@ -330,5 +377,69 @@ mod tests {
 
         let result = result.unwrap();
         Html::parse_document(&result);
+    }
+
+    #[test]
+    fn available_languages() {
+        let website = read_website("dict-responses/available_languages.html");
+        let languages = [
+            (Language::DE, Language::EN),
+            (Language::DE, Language::BG),
+            (Language::DE, Language::BS),
+            (Language::DE, Language::CS),
+            (Language::DE, Language::DA),
+            (Language::DE, Language::EL),
+            (Language::DE, Language::EO),
+            (Language::DE, Language::ES),
+            (Language::DE, Language::FI),
+            (Language::DE, Language::FR),
+            (Language::DE, Language::HR),
+            (Language::DE, Language::HU),
+            (Language::DE, Language::IS),
+            (Language::DE, Language::IT),
+            (Language::DE, Language::LA),
+            (Language::DE, Language::NL),
+            (Language::DE, Language::NO),
+            (Language::DE, Language::PL),
+            (Language::DE, Language::PT),
+            (Language::DE, Language::RO),
+            (Language::DE, Language::RU),
+            (Language::DE, Language::SK),
+            (Language::DE, Language::SQ),
+            (Language::DE, Language::SR),
+            (Language::DE, Language::SV),
+            (Language::DE, Language::TR),
+            (Language::EN, Language::BG),
+            (Language::EN, Language::BS),
+            (Language::EN, Language::CS),
+            (Language::EN, Language::DA),
+            (Language::EN, Language::EL),
+            (Language::EN, Language::EO),
+            (Language::EN, Language::ES),
+            (Language::EN, Language::FI),
+            (Language::EN, Language::FR),
+            (Language::EN, Language::HR),
+            (Language::EN, Language::HU),
+            (Language::EN, Language::IS),
+            (Language::EN, Language::IT),
+            (Language::EN, Language::LA),
+            (Language::EN, Language::NL),
+            (Language::EN, Language::NO),
+            (Language::EN, Language::PL),
+            (Language::EN, Language::PT),
+            (Language::EN, Language::RO),
+            (Language::EN, Language::RU),
+            (Language::EN, Language::SK),
+            (Language::EN, Language::SQ),
+            (Language::EN, Language::SR),
+            (Language::EN, Language::SV),
+            (Language::EN, Language::TR),
+        ];
+
+        let result = DictccTranslator::parse_available_languages(&website);
+
+        for pair in languages.iter() {
+            assert!(result.contains(pair));
+        }
     }
 }

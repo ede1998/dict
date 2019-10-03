@@ -59,11 +59,8 @@ fn print_info(arguments: &clap::ArgMatches) {
         .expect("Unexpected missing subcommand. Please contact the developer.");
     match subcommand {
         args::AVAILABLE => {
-            let languages = Language::get_all_languages();
             println!("The following language pairs are available:");
-            for l1 in [Language::EN, Language::DE].iter() {
-                for l2 in &languages {
-                    if DictccTranslator::is_language_available((*l1, *l2)) {
+            for (l1,l2) in DictccTranslator::get_available_languages() {
                         println!(
                             "{} {} => {} - {}",
                             l1.get_abbreviation(),
@@ -71,9 +68,6 @@ fn print_info(arguments: &clap::ArgMatches) {
                             l1,
                             l2
                         );
-                    }
-                }
-                println!();
             }
         }
         args::ABBREVIATIONS => {

@@ -2,7 +2,7 @@ pub type LanguagePair = (Language, Language);
 pub const DEFAULT_LANGUAGES: LanguagePair = (Language::EN, Language::DE);
 
 #[allow(dead_code)]
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 pub enum Language {
     BG,
     BS,
@@ -56,34 +56,142 @@ struct LanguageFull {
     value: Language,
 }
 
-const LANGUAGE: [LanguageFull;27] = [
-    LanguageFull{ value: Language::BG, abbreviation: "BG", name: "Bulgarian"},
-    LanguageFull{ value: Language::BS, abbreviation: "BS", name: "Bosnian"},
-    LanguageFull{ value: Language::CS, abbreviation: "CS", name: "Czech"},
-    LanguageFull{ value: Language::DA, abbreviation: "DA", name: "Danish"},
-    LanguageFull{ value: Language::DE, abbreviation: "DE", name: "German"},
-    LanguageFull{ value: Language::EL, abbreviation: "EL", name: "Greek"},
-    LanguageFull{ value: Language::EN, abbreviation: "EN", name: "English"},
-    LanguageFull{ value: Language::EO, abbreviation: "EO", name: "Esperanto"},
-    LanguageFull{ value: Language::ES, abbreviation: "ES", name: "Spanish"},
-    LanguageFull{ value: Language::FI, abbreviation: "FI", name: "Finnish"},
-    LanguageFull{ value: Language::FR, abbreviation: "FR", name: "French"},
-    LanguageFull{ value: Language::HR, abbreviation: "HR", name: "Croatian"},
-    LanguageFull{ value: Language::HU, abbreviation: "HU", name: "Hungarian"},
-    LanguageFull{ value: Language::IS, abbreviation: "IS", name: "Icelandic"},
-    LanguageFull{ value: Language::IT, abbreviation: "IT", name: "Italian"},
-    LanguageFull{ value: Language::LA, abbreviation: "LA", name: "Latin"},
-    LanguageFull{ value: Language::NL, abbreviation: "NL", name: "Dutch"},
-    LanguageFull{ value: Language::NO, abbreviation: "NO", name: "Norwegian"},
-    LanguageFull{ value: Language::PL, abbreviation: "PL", name: "Polish"},
-    LanguageFull{ value: Language::PT, abbreviation: "PT", name: "Portuguese"},
-    LanguageFull{ value: Language::RO, abbreviation: "RO", name: "Romanian"},
-    LanguageFull{ value: Language::RU, abbreviation: "RU", name: "Russian"},
-    LanguageFull{ value: Language::SK, abbreviation: "SK", name: "Slovak"},
-    LanguageFull{ value: Language::SQ, abbreviation: "SQ", name: "Albanian"},
-    LanguageFull{ value: Language::SR, abbreviation: "SR", name: "Serbian"},
-    LanguageFull{ value: Language::SV, abbreviation: "SV", name: "Swedish"},
-    LanguageFull{ value: Language::TR, abbreviation: "TR", name: "Turkish"},
+const LANGUAGE: [LanguageFull; 27] = [
+    LanguageFull {
+        value: Language::BG,
+        abbreviation: "BG",
+        name: "Bulgarian",
+    },
+    LanguageFull {
+        value: Language::BS,
+        abbreviation: "BS",
+        name: "Bosnian",
+    },
+    LanguageFull {
+        value: Language::CS,
+        abbreviation: "CS",
+        name: "Czech",
+    },
+    LanguageFull {
+        value: Language::DA,
+        abbreviation: "DA",
+        name: "Danish",
+    },
+    LanguageFull {
+        value: Language::DE,
+        abbreviation: "DE",
+        name: "German",
+    },
+    LanguageFull {
+        value: Language::EL,
+        abbreviation: "EL",
+        name: "Greek",
+    },
+    LanguageFull {
+        value: Language::EN,
+        abbreviation: "EN",
+        name: "English",
+    },
+    LanguageFull {
+        value: Language::EO,
+        abbreviation: "EO",
+        name: "Esperanto",
+    },
+    LanguageFull {
+        value: Language::ES,
+        abbreviation: "ES",
+        name: "Spanish",
+    },
+    LanguageFull {
+        value: Language::FI,
+        abbreviation: "FI",
+        name: "Finnish",
+    },
+    LanguageFull {
+        value: Language::FR,
+        abbreviation: "FR",
+        name: "French",
+    },
+    LanguageFull {
+        value: Language::HR,
+        abbreviation: "HR",
+        name: "Croatian",
+    },
+    LanguageFull {
+        value: Language::HU,
+        abbreviation: "HU",
+        name: "Hungarian",
+    },
+    LanguageFull {
+        value: Language::IS,
+        abbreviation: "IS",
+        name: "Icelandic",
+    },
+    LanguageFull {
+        value: Language::IT,
+        abbreviation: "IT",
+        name: "Italian",
+    },
+    LanguageFull {
+        value: Language::LA,
+        abbreviation: "LA",
+        name: "Latin",
+    },
+    LanguageFull {
+        value: Language::NL,
+        abbreviation: "NL",
+        name: "Dutch",
+    },
+    LanguageFull {
+        value: Language::NO,
+        abbreviation: "NO",
+        name: "Norwegian",
+    },
+    LanguageFull {
+        value: Language::PL,
+        abbreviation: "PL",
+        name: "Polish",
+    },
+    LanguageFull {
+        value: Language::PT,
+        abbreviation: "PT",
+        name: "Portuguese",
+    },
+    LanguageFull {
+        value: Language::RO,
+        abbreviation: "RO",
+        name: "Romanian",
+    },
+    LanguageFull {
+        value: Language::RU,
+        abbreviation: "RU",
+        name: "Russian",
+    },
+    LanguageFull {
+        value: Language::SK,
+        abbreviation: "SK",
+        name: "Slovak",
+    },
+    LanguageFull {
+        value: Language::SQ,
+        abbreviation: "SQ",
+        name: "Albanian",
+    },
+    LanguageFull {
+        value: Language::SR,
+        abbreviation: "SR",
+        name: "Serbian",
+    },
+    LanguageFull {
+        value: Language::SV,
+        abbreviation: "SV",
+        name: "Swedish",
+    },
+    LanguageFull {
+        value: Language::TR,
+        abbreviation: "TR",
+        name: "Turkish",
+    },
 ];
 
 use std::fmt;
