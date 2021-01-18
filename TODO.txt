@@ -1,5 +1,24 @@
+1.  wrong order !!!!
+
 $ dict --languages EN RU calm
 English >>>>>>>>>>>>>>>>>>> Russian
 ========== TRANSLATIONS ==========
 спокойный {adj} ............................................................. calm
-wrong order !!!!
+
+
+2. missing translation text
+$ dict "honey badger"
+German >>>>>>>>>>>>>>>>>>> English
+========== TRANSLATIONS ==========
+ .................................... 
+ .................................... 
+to badger sb. ....................... jdm. keine Ruhe lassen
+to badger sb. ....................... jdm. zusetzen
+
+3.  language pairs is a single language not a pair
+
+OPTIONS:
+    -l, --languages <language pairs> <language pairs>
+            Languages to translate between (default: EN-DE) [possible values: BG, BS, CS, DA, DE, EL, EN, EO, ES, FI,
+            FR, HR, HU, IS, IT, LA, NL, NO, PL, PT, RO, RU, SK, SQ, SR, SV, TR]
+
