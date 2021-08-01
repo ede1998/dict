@@ -8,7 +8,8 @@ description = "A small command-line translator. It queries the dict.cc website f
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-scraper = "0.11"
-reqwest = "0.9.21"
-itertools = "0.8.0"
-clap = "2.33.0"
+scraper = "0.12"
+reqwest = { version = "0.11", features= ["blocking"] }
+itertools = "0.10"
+clap = "2.33"
+url = "2.2.2"

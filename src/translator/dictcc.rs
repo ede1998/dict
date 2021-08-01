@@ -16,12 +16,12 @@ const URL_LANGUAGE_LIST: &str = "https://www.dict.cc";
 
 #[derive(Debug)]
 enum RequestError {
-    UrlError(reqwest::UrlError),
+    UrlError(url::ParseError),
     DownloadError(reqwest::Error),
 }
 
-impl From<reqwest::UrlError> for RequestError {
-    fn from(error: reqwest::UrlError) -> Self {
+impl From<url::ParseError> for RequestError {
+    fn from(error: url::ParseError) -> Self {
         RequestError::UrlError(error)
     }
 }
@@ -51,7 +51,7 @@ impl DictccTranslator {
     }
 
     fn make_request(request: &str) -> Result<String, RequestError> {
-        Ok(reqwest::get(request)?.text()?)
+        Ok(reqwest::blocking::get(request)?.text()?)
     }
 
     fn download_translations(
