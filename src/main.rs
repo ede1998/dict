@@ -23,7 +23,7 @@ fn main() {
     let arguments = args::parse();
 
     if let Some(subarguments) = arguments.subcommand_matches(args::INFO) {
-        print_info(&subarguments);
+        print_info(subarguments);
     } else {
         issue_query(&arguments);
     }
@@ -49,7 +49,7 @@ fn issue_query(arguments: &clap::ArgMatches) {
     println!("{} >>>>>>>>>>>>>>>>>>> {}", language.0, language.1);
 
     let query = arguments.value_of(args::QUERY).unwrap();
-    translator.translate(&query);
+    translator.translate(query);
     print(translator);
 }
 

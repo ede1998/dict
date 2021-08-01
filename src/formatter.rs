@@ -3,8 +3,8 @@ use crate::translator::{Entries, Suggestions, Translations, Translator};
 pub fn print(translator: impl Translator) {
     use Entries::*;
     match translator.entries() {
-        Translation(t) => print_translations(&t),
-        Suggestion(s) => print_suggestions(&s),
+        Translation(t) => print_translations(t),
+        Suggestion(s) => print_suggestions(s),
         NotSet => println!("No search done yet."),
         NoResultsFound => println!("No results found."),
     }
@@ -23,7 +23,7 @@ fn print_translations(translations: &Translations) {
 
     println!("========== TRANSLATIONS ==========");
 
-    for (l, r) in translations {
+    for (l, r) in translations.iter() {
         let filler = longest - l.chars().count();
         let filler: String = String::from(FILLER_CHAR).repeat(filler);
         println!("{} {} {}", l, filler, r);

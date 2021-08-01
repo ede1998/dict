@@ -1,7 +1,36 @@
 mod dictcc;
 mod language;
 
-pub type Translations = Vec<(String, String)>;
+#[derive(Debug, PartialEq, PartialOrd, Clone)]
+pub struct Translations(Vec<(String, String)>);
+
+impl std::ops::Deref for Translations {
+    type Target = Vec<(String, String)>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl std::ops::DerefMut for Translations {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
+impl FromIterator<(String, String)> for Translations {
+    fn from_iter<T: IntoIterator<Item = (String, String)>>(iter: T) -> Self {
+        let t = iter.into_iter().collect();
+        Self(t)
+    }
+}
+
+impl From<Vec<(String, String)>> for Translations {
+    fn from(f: Vec<(String, String)>) -> Self {
+        Self(f)
+    }
+}
+
 pub type Suggestions = (Vec<String>, Vec<String>);
 
 #[derive(Debug)]
@@ -29,6 +58,8 @@ pub trait Translator {
     fn is_language_available(language: LanguagePair) -> bool;
     fn get_available_languages() -> Vec<LanguagePair>;
 }
+
+use std::iter::FromIterator;
 
 pub use dictcc::DictccTranslator;
 pub use language::Language;

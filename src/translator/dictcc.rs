@@ -60,10 +60,10 @@ impl DictccTranslator {
     ) -> Result<String, RequestError> {
         // format!() does not work bc it expects a string literal as its first argument
         let request_url = URL
-            .replacen("{}", &language.0.get_abbreviation(), 1)
-            .replacen("{}", &language.1.get_abbreviation(), 1);
+            .replacen("{}", language.0.get_abbreviation(), 1)
+            .replacen("{}", language.1.get_abbreviation(), 1);
         let request = reqwest::Url::parse_with_params(&request_url, &[("s", request)])?;
-        DictccTranslator::make_request(&request.as_str())
+        DictccTranslator::make_request(request.as_str())
     }
 
     fn parse_column(html: &Html, column_selector: &str) -> Vec<String> {
@@ -87,7 +87,7 @@ impl DictccTranslator {
                         }
                         None => {
                             if let Some(node) = node.value().as_text() {
-                                content.push_str(&node);
+                                content.push_str(node);
                             }
                         }
                     }
@@ -124,8 +124,8 @@ impl DictccTranslator {
         const LEFT_SELECTOR: &str = "td.td3nl:first-of-type > a";
         const RIGHT_SELECTOR: &str = "td.td3nl:last-of-type > a";
 
-        let left = DictccTranslator::parse_column(&html, LEFT_SELECTOR);
-        let right = DictccTranslator::parse_column(&html, RIGHT_SELECTOR);
+        let left = DictccTranslator::parse_column(html, LEFT_SELECTOR);
+        let right = DictccTranslator::parse_column(html, RIGHT_SELECTOR);
 
         if left.is_empty() && right.is_empty() {
             return None;
@@ -139,13 +139,13 @@ impl DictccTranslator {
         use scraper::Selector;
         const SELECTOR: &str = "#lpddbsf option";
 
-        let selector = Selector::parse(&SELECTOR).unwrap();
+        let selector = Selector::parse(SELECTOR).unwrap();
         let rows: Vec<LanguagePair> = html
             .select(&selector)
             .filter_map(|element| {
                 // filter wrong elements
                 let element = element.value().attr("value")?;
-                if element.contains("-") || element.len() != 4 {
+                if element.contains('-') || element.len() != 4 {
                     return None;
                 }
 
@@ -267,7 +267,7 @@ mod tests {
             translations.push(pair);
         }
 
-        translations
+        translations.into()
     }
 
     fn read_suggestions(filename: &str) -> Suggestions {
@@ -283,7 +283,7 @@ mod tests {
         for line in reader.lines() {
             let line = line.unwrap();
 
-            if line == "" {
+            if line.is_empty() {
                 before_swap = false;
                 continue;
             }
@@ -387,13 +387,13 @@ mod tests {
 
         let mut translator = DictccTranslator::new();
         assert!(translator.set_languages_if_available(LANG));
-        translator.translate(&WORD);
+        translator.translate(WORD);
 
         match translator.entries() {
             Translation(t) => {
-                for (l, r) in t {
-                    assert_eq!(l.chars().any(char::is_numeric), false);
-                    assert_eq!(r.chars().any(char::is_numeric), false);
+                for (l, r) in t.iter() {
+                    assert!(!l.chars().any(char::is_numeric));
+                    assert!(!r.chars().any(char::is_numeric));
                 }
             }
             _ => panic!("No translations found unexpectedly!"),
