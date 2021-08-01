@@ -149,7 +149,7 @@ dependencies = [
 
 [[package]]
 name = "dict"
-version = "1.4.3"
+version = "1.4.4"
 dependencies = [
  "clap",
  "itertools",
