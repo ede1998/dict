@@ -249,7 +249,7 @@ mod tests {
     use super::*;
 
     fn read_translations(filename: &str) -> Translations {
-        use crate::itertools::Itertools;
+        use itertools::Itertools;
         use std::fs::File;
         use std::io::{BufRead, BufReader};
 
