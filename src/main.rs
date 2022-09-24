@@ -1,14 +1,3 @@
-#[macro_use(
-    app_from_crate,
-    crate_name,
-    crate_version,
-    crate_authors,
-    crate_description
-)]
-extern crate clap;
-extern crate itertools;
-extern crate reqwest;
-
 mod args;
 mod formatter;
 mod translator;

@@ -10,21 +10,20 @@ pub const INFO: &str = "info";
 pub const AVAILABLE: &str = "available";
 pub const ABBREVIATIONS: &str = "abbreviations";
 
-pub fn parse() -> ArgMatches<'static> {
-    let matches = app_from_crate!()
+pub fn parse() -> ArgMatches {
+    let matches = clap::command!()
         .setting(AppSettings::SubcommandsNegateReqs)
         .setting(AppSettings::ArgsNegateSubcommands)
-        .setting(AppSettings::VersionlessSubcommands)
         .arg(
             Arg::with_name(LANGUAGE_PAIR)
-                .short("l")
+                .short('l')
                 .long("languages")
                 .number_of_values(2)
-                .help(&format!(
+                .help(format!(
                     "Languages to translate between (default: {}-{})",
                     DEFAULT_LANGUAGES.0.get_abbreviation(),
                     DEFAULT_LANGUAGES.1.get_abbreviation()
-                ))
+                ).as_str())
                 .takes_value(true)
                 .case_insensitive(true)
                 .possible_values(

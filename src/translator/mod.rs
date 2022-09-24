@@ -1,7 +1,7 @@
 mod dictcc;
 mod language;
 
-#[derive(Debug, PartialEq, PartialOrd, Clone)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Clone)]
 pub struct Translations(Vec<(String, String)>);
 
 impl std::ops::Deref for Translations {
