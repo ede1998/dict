@@ -20,13 +20,13 @@ fn main() {
 
 fn issue_query(arguments: &clap::ArgMatches) {
     let mut language = (Language::DE, Language::EN);
-    if let Some(pair) = arguments.values_of(args::LANGUAGE_PAIR) {
-        let pair: Vec<&str> = pair.collect();
-        assert_eq!(pair.len(), 2);
+    if let Some(mut pair) = arguments.get_many(args::LANGUAGE_PAIR) {
         language = (
-            pair[0].parse::<Language>().unwrap(),
-            pair[1].parse::<Language>().unwrap(),
+            *pair.next().expect("getting first language identifier"),
+            *pair.next().expect("getting second language identifier"),
         );
+
+        assert_eq!(None, pair.next());
     }
 
     let mut translator = DictccTranslator::new();
@@ -37,7 +37,7 @@ fn issue_query(arguments: &clap::ArgMatches) {
 
     println!("{} >>>>>>>>>>>>>>>>>>> {}", language.0, language.1);
 
-    let query = arguments.value_of(args::QUERY).unwrap();
+    let query: &String = arguments.get_one(args::QUERY).unwrap();
     translator.translate(query);
     print(translator);
 }

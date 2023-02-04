@@ -2,7 +2,7 @@ pub type LanguagePair = (Language, Language);
 pub const DEFAULT_LANGUAGES: LanguagePair = (Language::EN, Language::DE);
 
 #[allow(dead_code)]
-#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash, clap::ValueEnum)]
 pub enum Language {
     BG,
     BS,
