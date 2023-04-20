@@ -1,6 +1,6 @@
 [package]
 name = "dict"
-version = "1.4.8"
+version = "1.4.9"
 authors = ["ede1998 <online@erik-hennig.me>"]
 edition = "2021"
 description = "A small command-line translator. It queries the dict.cc website for translations."
@@ -11,5 +11,5 @@ description = "A small command-line translator. It queries the dict.cc website f
 scraper = "0.14"
 reqwest = { version = "0.11", features= ["blocking"] }
 itertools = "0.10"
-clap = { version = "4.1", features = ["cargo", "derive"] }
+clap = { version = "4.2", features = ["cargo", "derive"] }
 url = "2.3.1"
