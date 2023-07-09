@@ -1,6 +1,6 @@
 [package]
 name = "dict"
-version = "1.4.9"
+version = "1.4.10"
 authors = ["ede1998 <online@erik-hennig.me>"]
 edition = "2021"
 description = "A small command-line translator. It queries the dict.cc website for translations."
@@ -8,8 +8,8 @@ description = "A small command-line translator. It queries the dict.cc website f
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-scraper = "0.14"
+scraper = "0.17"
 reqwest = { version = "0.11", features= ["blocking"] }
-itertools = "0.10"
-clap = { version = "4.2", features = ["cargo", "derive"] }
-url = "2.3.1"
+itertools = "0.11"
+clap = { version = "4.3", features = ["cargo", "derive"] }
+url = "2.4.0"
